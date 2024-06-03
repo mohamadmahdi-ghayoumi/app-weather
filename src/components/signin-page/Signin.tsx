@@ -42,7 +42,7 @@ function Signin() {
       } else if (findUser) {
         setIsToastSuccess(true);
         setLoading(true);
-        // setTimeout(() => navigate("/homee"), 3000);
+        setTimeout(() => navigate("/homee"), 3000);
       } else {
         console.log("nadare");
         setIsToastError(true);

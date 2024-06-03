@@ -9,6 +9,7 @@ async function GetUsers() {
 export async function GetWheather(city : string) {
     try{
         const response = await axios.get(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=uk&key=A5P3SFCW5DYM637H5KWUSPMDY&contentType=json`)
+        console.log(response.data)
         return response.data
     }
     catch (err) {

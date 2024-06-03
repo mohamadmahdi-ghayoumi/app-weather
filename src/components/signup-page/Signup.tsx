@@ -1,4 +1,11 @@
-import { Alert, AlertTitle, Box, CircularProgress, Fade, Paper } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  CircularProgress,
+  Fade,
+  Paper,
+} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -19,7 +26,7 @@ function Signup() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  
+
   function handleCreateUser(e) {
     e.preventDefault();
     setIsToastError(false);
@@ -50,14 +57,15 @@ function Signup() {
           });
           setIsToastSuccess(true);
           setLoading(true);
-        // setTimeout(() => navigate("/"), 3000);
-
+          // setTimeout(() => navigate("/"), 3000);
         }
       });
     } else {
       setIsToastError({ mode: true, text: "Please enter the values" });
     }
-    // navigate("?mode=signin")
+    setTimeout(() => {
+      navigate("?mode=signin");
+    }, 3000);
   }
 
   return (
@@ -137,7 +145,7 @@ function Signup() {
             <Person2Icon />
           </Avatar>
           <Typography component="h1" variant="h5" sx={{}}>
-            Sign in
+            Sign up
           </Typography>
           <Box
             component="form"
@@ -187,29 +195,29 @@ function Signup() {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 , py:2 }}
+              sx={{ mt: 3, mb: 2, py: 2 }}
               // onClick={() => }
             >
-                <Fade
-                  in={loading}
-                  style={
-                    {
-                      // transitionDelay: loading ? "800ms" : "0ms",
-                    }
+              <Fade
+                in={loading}
+                style={
+                  {
+                    // transitionDelay: loading ? "800ms" : "0ms",
                   }
-                  unmountOnExit
-                >
-                  <CircularProgress
-                    sx={{
-                      color: (theme) =>
-                        theme.palette.mode === "light" ? "#1a90ff" : "#308fe8",
-                      animationDuration: "1330ms",
-                      position: "absolute",
-                      left: "30px",
-                      transitionDelay: loading ? "800ms" : "0ms",
-                    }}
-                  />
-                </Fade>
+                }
+                unmountOnExit
+              >
+                <CircularProgress
+                  sx={{
+                    color: (theme) =>
+                      theme.palette.mode === "light" ? "#1a90ff" : "#308fe8",
+                    animationDuration: "1330ms",
+                    position: "absolute",
+                    left: "30px",
+                    transitionDelay: loading ? "800ms" : "0ms",
+                  }}
+                />
+              </Fade>
               Create Account{" "}
             </Button>
             <Grid container>

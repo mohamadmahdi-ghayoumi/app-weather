@@ -5,11 +5,11 @@ export const theme = createTheme({
     primary: {
       light: '#ffffffde',
       main: '#1b2132',
-      dark: '#3f50b5',
+      dark: '#98a4ee',
       contrastText: "#a2bc93de"
     },
     secondary: {
-      light: '#ff7961',
+      light: '#cdced4',
       main: '#f44336',
       dark: '#ba000d',
       contrastText: '#000',
