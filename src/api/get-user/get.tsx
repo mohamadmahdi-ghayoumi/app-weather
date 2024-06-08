@@ -13,10 +13,9 @@ export async function GetWheather(city : string) {
         return response.data
     }
     catch (err) {
-          console.log(`toTry  did not work ========`);
-          return false
-  
-          
+     
+          console.log(`toTry `);
+          return false           
 }
 }
 

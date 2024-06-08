@@ -7,7 +7,7 @@ import { Outlet } from 'react-router-dom'
 
 function Layout() {
   return (
-    <Box><Header/><Outlet/><Footer/></Box>
+    <Box><Outlet/><Footer/></Box>
   )
 }
 

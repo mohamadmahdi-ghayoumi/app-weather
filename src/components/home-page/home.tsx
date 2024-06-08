@@ -2,21 +2,26 @@ import {
   Autocomplete,
   Box,
   Button,
+  Card,
+  CardContent,
   Grid,
-  Paper,
+  ImageList,
   TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { GetCities, GetWheather } from "../../api/get-user/get";
 import { getLocalStorage, setLocalStorage } from "../../utils/localStorage";
-import { makeStyles } from "@material-ui/core/styles";
-import { Description, Login } from "@mui/icons-material";
+import logoo from "../../assets/images/logoo.png";
+import { Login } from "@mui/icons-material";
+import Lottie from "react-lottie";
+
 type informationCityType = {
   city: string;
   temp: string;
   country: string;
   description: string;
+  icon: string;
 };
 
 function Home() {
@@ -26,41 +31,46 @@ function Home() {
     temp: "",
     country: "",
     description: "",
+    icon: "",
   });
   const [city, setCity] = useState("");
   const [showModalCity, setShowModalCity] = useState(false);
-
-  // const defaultProps = {
-  //   options: dataa,
-  //   getOptionLabel: (option) => option.city,
-  // };
-  // useEffect(() => {
-  //   GetCities().then((data) => {
-  //     setDataa(data.data);
-  //   });
-  // }, []);
+  const [showError, setShowError] = useState(false);
 
   const allCities = getLocalStorage("cities");
+  let weatherIcon;
+
   function searchTemp() {
+    setShowError(false);
+console.log(city)
     GetWheather(city).then((data) => {
+      console.log(data);
+      let weatherIcon;
+
       if (data) {
-        setShowModalCity(true);
-        setInformationCity({
+        if (data.description.includes("of rain")) {
+          weatherIcon =
+            "https://lottie.host/embed/2181dbf6-ac02-4416-b6cb-770a52f1d2a9/pIlPejiPjl.json";
+        } else {
+          weatherIcon =
+            "https://lottie.host/embed/809659fe-6318-472e-9e8c-3a29e3910ada/VrObjXj9md.json";
+        }
+        const user = {
           city: data.address,
           country: data.resolvedAddress.split(",")[1],
           temp: data.currentConditions.temp,
           description: data.description,
-        });
-        setLocalStorage("cities", [
-          {
-            city: data.address,
-            country: data.resolvedAddress.split(",")[1],
-            temp: data.currentConditions.temp,
-          },
-          ...getLocalStorage("cities"),
-        ]);
-      } else {
+          icon: weatherIcon,
+        };
+
+        setShowModalCity(true);
+        setInformationCity(user);
+
+        setLocalStorage("cities", [user, ...getLocalStorage("cities")]);
+        console.log(user);
+      } else if (data === false) {
         setShowModalCity(false);
+        setShowError(true);
       }
     });
   }
@@ -70,257 +80,252 @@ function Home() {
   }
 
   return (
-    <Grid
-      spacing={5}
-      sx={{
-        backgroundSize: "cover",
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        gap: 4,
-        px: "100px",
-      }}
-    >
+    <Box>
+     
       <video
-        autoPlay
-        loop
-        muted
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          zIndex: -1,
+  autoPlay
+  loop
+  muted
+  style={{
+    position: "absolute",
+    width: "100vw", 
+    height: "100vh", 
+    objectFit: "cover",
+    zIndex: -1,
+  }}
+>
+  <source src="./src/assets/images/weather.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+      {/* header */}
+      <Box
+        sx={{
+          // background: "linear-gradient(to right bottom, #786a88, #4c34dd)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: "20px",
+          height: "50px",
         }}
       >
-        <source src="./src/assets/images/weather.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      {/* <Button onClick={searchTemp}>search</Button> */}
-      {/* Header App */}
-      <Box component={"h3"} sx={{ pt: 5, fontWeight: "bold", fontSize: 50 }}>
-        Weather App
-      </Box>
-
-      {/* SELECT INPUT FOR CITIES */}
-      {/* <Autocomplete
-        sx={{ width: "30%" }}
-        {...defaultProps}
-        id="select-on-focus"
-        selectOnFocus
-        renderInput={(params) => (
-          <TextField {...params} label="selectOnFocus" variant="standard" />
-        )}
-      /> */}
-
-      {/*search input  */}
-      <Box sx={{ background: "url('./src/assets/images/sky.jpg')" }}>
-        <TextField
-          InputLabelProps={{ style: { color: "#fff" } }}
-          InputProps={{
-            style: { color: "primary.main" },
-          }}
-          id="filled-search"
-          label="Search field"
-          type="search"
-          variant="filled"
-          sx={{ bgcolor: "primary.contrastText" }}
-          onChange={valueInput}
-        ></TextField>
-        <Button variant="contained" sx={{ height: "1" }} onClick={searchTemp}>
-          Contained
-        </Button>
-      </Box>
-
-      {/* MODAL TEMP ONE CITY */}
-      {showModalCity ? (
-        <Box sx={{ bgcolor: "primary.contrastText", width: 1, height: "30%" }}>
-          <Box>
-            <Typography component={"h1"}>
-              {"city : " + informationCity.city}
-            </Typography>
-            <Typography component={"h1"}>
-              {"temp : " + informationCity.temp + "°C"}
-            </Typography>
-            <Typography component={"h1"}>
-              {"country : " + informationCity.country}
-            </Typography>
-            <Typography component={"h1"}>
-              {" "}
-              {"country : " + informationCity.description}
-            </Typography>
-          </Box>
+        <Box>
+          <ImageList sx={{ width: "100px", height: "100%" }}>
+            <img src={logoo} alt="" style={{ height: "100%" }} />
+          </ImageList>
         </Box>
-      ) : (
-        ""
-      )}
-
-      {/* MODAL TEMP RECENT CITIES */}
-      {allCities.length != 0 ? (
+        <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <TextField
+            InputLabelProps={{ style: { color: "#fff" } }}
+            InputProps={{
+              style: { color: "white" },
+            }}
+            id="filled-search"
+            label="Search places or city..."
+            type="search"
+            variant="filled"
+            sx={{
+              bgcolor: "primary.main",
+              width: "900px",
+              borderTopLeftRadius: 20,
+              borderBottomLeftRadius: 20,
+              height: "1",
+            }}
+            onChange={valueInput}
+          ></TextField>
+          <Button
+            variant="contained"
+            sx={{
+              color: "white",
+              borderRadius: 0,
+              borderTopRightRadius: 20,
+              borderBottomRightRadius: 20,
+              height: "100%",
+              "&:hover": {
+                bgcolor: "black",
+                color: "white",
+              },
+            }}
+            onClick={searchTemp}
+          >
+            Contained
+          </Button>
+        </Box>
         <Box
           sx={{
-            bgcolor: "primary.contrastText",
-            width: 1,
-            height: "30%",
+            bgcolor: "primary.main",
             display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "50%",
+            height: "100%",
+            width: "50px",
+            color: "white",
           }}
         >
-          {allCities.map((cityy: informationCityType) => {
-            return (
-              <Box>
-                <Typography component={"h1"}>
-                  {"city : " + cityy.city}
-                </Typography>
-                <Typography component={"h1"}>
-                  {"temp : " + cityy.temp + "°C"}
-                </Typography>
-                <Typography component={"h1"}>
-                  {"country : " + cityy.country}
-                </Typography>
-                <Typography component={"h1"}>
-                  {" "}
-                  {"country : " + informationCity.description}
-                </Typography>{" "}
-              </Box>
-            );
-          })}
+          <Login />
         </Box>
-      ) : (
-        ""
-      )}
-    </Grid>
+      </Box>
+
+      <Typography
+        variant="h3"
+        sx={{ pt: 5, fontWeight: "bold" , textAlign: "center"}}
+      >
+        Weather App
+      </Typography>
+
+      {/* main */}
+      <Grid
+        spacing={2}
+        sx={{
+          backgroundSize: "cover",
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          px: "100px",
+          justifyContent: "space-evenly",
+        }}
+      >
+        {/* Header App */}
+
+        {/* ERROR */}
+        {showError && (
+          <Box
+            sx={{
+              bgcolor: "#ea0000de",
+              color: "primary.light",
+              px: 5,
+              py: 4,
+              borderRadius: 5,
+              
+            }}
+          >
+            <Typography sx={{fontSize:"30px",
+              fontFamily: "sans-serif",
+              fontWeight : "bold"}}>There is no such city</Typography>
+          </Box>
+        )}
+
+        {/* MODAL TEMP ONE CITY */}
+        {showModalCity ? (
+          <Box
+            sx={{
+              opacity: 0.8,
+              bgcolor:"primary.light",
+              // bgcolor: "secondary.main",
+              width: "65%",
+              height: "25%",
+              justifyContent: "space-evenly",
+              display: "flex",
+              flexDirection: "column",
+              p: 3,
+              borderRadius: 5,
+              my:"40px"
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography sx={{ fontSize: "17px" }}>City : </Typography>
+              <Typography sx={{ fontSize: "20px" }}>
+                {informationCity.city}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography sx={{ fontSize: "17px" }}>Temp : </Typography>
+              <Typography sx={{ fontSize: "20px" }}>
+                {informationCity.temp + "°C"}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography sx={{ fontSize: "17px" }}>Country :</Typography>
+              <Typography sx={{ fontSize: "20px" }}>
+                {informationCity.country}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography sx={{ fontSize: "17px" }}>Description :</Typography>
+              <Typography>{informationCity.description}</Typography>
+            </Box>
+            <Box sx={{ position: "absolute", right: "15%", top: "25%" }}>
+              {informationCity.icon !== "rainy" ? (
+                <iframe
+                  width={"50%"}
+                  src="https://lottie.host/embed/809659fe-6318-472e-9e8c-3a29e3910ada/VrObjXj9md.json"
+                ></iframe>
+              ) : (
+                <iframe
+                  width={"50%"}
+                  src="https://lottie.host/embed/2181dbf6-ac02-4416-b6cb-770a52f1d2a9/pIlPejiPjl.json"
+                ></iframe>
+              )}
+            </Box>
+          </Box>
+        ) : (
+          ""
+        )}
+
+        {/* MODAL TEMP RECENT CITIES */}
+        {allCities.length != 0 ? (
+          <Grid
+            container
+    //         sx={{
+    //           // gap: 3,
+    //           // flexWrap:"nowrap",
+    //           // overflowX : "auto"   flex: 1, // Make the Grid container occupy remaining vertical space
+    // overflowY: "auto", // Enable vertical scrolling when content exceeds the viewport height
+    // padding: "10px"
+    //         }}
+
+    sx={{
+      gap: 3,
+      flex: 1,
+      overflowY: "auto",
+      padding: "10px",
+      "&::-webkit-scrollbar": {
+        display: "none", // Hide the scrollbar for WebKit browsers (Chrome, Safari)
+      },
+      scrollbarWidth: "none", // Hide the scrollbar for non-WebKit browsers
+    }}
+  
+          >
+            {allCities.map((cityy: informationCityType, index) => {
+              return (
+                <Grid item xs={4}
+                  sx={{   
+                      opacity: 0.8,
+                    bgcolor:"primary.main",
+                    maxWidth: { xs: "100%", sm: 300 },
+                    margin: { xs: "10px", sm: "auto" },
+                    marginTop: "20px",
+               
+                    borderRadius: "50px"
+                  }}
+                >
+                  <Box>
+                    <iframe width={"100%"} src={cityy.icon}></iframe>
+                  </Box>
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div" color={"white"}>
+                      {cityy.city}, {cityy.country}
+                    </Typography>
+                    {/* <Typography variant="body2" color="text.secondary" color={"white"}> */}
+                    <Typography variant="body2" color={"white"}>
+                    Temperature: {cityy.temp}°C
+                    </Typography>
+                  </CardContent>
+                </Grid>
+              );
+            })}
+          </Grid>
+        ) : (
+          ""
+        )}
+      </Grid>
+    </Box>
   );
 }
 
 export default Home;
-
-// const top100Films = [
-//   { title: "The Shawshank Redemption", year: 1994 },
-//   { title: "The Godfather", year: 1972 },
-//   { title: "The Godfather: Part II", year: 1974 },
-//   { title: "The Dark Knight", year: 2008 },
-//   { title: "12 Angry Men", year: 1957 },
-//   { title: "Schindler's List", year: 1993 },
-//   { title: "Pulp Fiction", year: 1994 },
-//   {
-//     title: "The Lord of the Rings: The Return of the King",
-//     year: 2003,
-//   },
-//   { title: "The Good, the Bad and the Ugly", year: 1966 },
-//   { title: "Fight Club", year: 1999 },
-//   {
-//     title: "The Lord of the Rings: The Fellowship of the Ring",
-//     year: 2001,
-//   },
-//   {
-//     title: "Star Wars: Episode V - The Empire Strikes Back",
-//     year: 1980,
-//   },
-//   { title: "Forrest Gump", year: 1994 },
-//   { title: "Inception", year: 2010 },
-//   {
-//     title: "The Lord of the Rings: The Two Towers",
-//     year: 2002,
-//   },
-//   { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-//   { title: "Goodfellas", year: 1990 },
-//   { title: "The Matrix", year: 1999 },
-//   { title: "Seven Samurai", year: 1954 },
-//   {
-//     title: "Star Wars: Episode IV - A New Hope",
-//     year: 1977,
-//   },
-//   { title: "City of God", year: 2002 },
-//   { title: "Se7en", year: 1995 },
-//   { title: "The Silence of the Lambs", year: 1991 },
-//   { title: "It's a Wonderful Life", year: 1946 },
-//   { title: "Life Is Beautiful", year: 1997 },
-//   { title: "The Usual Suspects", year: 1995 },
-//   { title: "Léon: The Professional", year: 1994 },
-//   { title: "Spirited Away", year: 2001 },
-//   { title: "Saving Private Ryan", year: 1998 },
-//   { title: "Once Upon a Time in the West", year: 1968 },
-//   { title: "American History X", year: 1998 },
-//   { title: "Interstellar", year: 2014 },
-//   { title: "Casablanca", year: 1942 },
-//   { title: "City Lights", year: 1931 },
-//   { title: "Psycho", year: 1960 },
-//   { title: "The Green Mile", year: 1999 },
-//   { title: "The Intouchables", year: 2011 },
-//   { title: "Modern Times", year: 1936 },
-//   { title: "Raiders of the Lost Ark", year: 1981 },
-//   { title: "Rear Window", year: 1954 },
-//   { title: "The Pianist", year: 2002 },
-//   { title: "The Departed", year: 2006 },
-//   { title: "Terminator 2: Judgment Day", year: 1991 },
-//   { title: "Back to the Future", year: 1985 },
-//   { title: "Whiplash", year: 2014 },
-//   { title: "Gladiator", year: 2000 },
-//   { title: "Memento", year: 2000 },
-//   { title: "The Prestige", year: 2006 },
-//   { title: "The Lion King", year: 1994 },
-//   { title: "Apocalypse Now", year: 1979 },
-//   { title: "Alien", year: 1979 },
-//   { title: "Sunset Boulevard", year: 1950 },
-//   {
-//     title:
-//       "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-//     year: 1964,
-//   },
-//   { title: "The Great Dictator", year: 1940 },
-//   { title: "Cinema Paradiso", year: 1988 },
-//   { title: "The Lives of Others", year: 2006 },
-//   { title: "Grave of the Fireflies", year: 1988 },
-//   { title: "Paths of Glory", year: 1957 },
-//   { title: "Django Unchained", year: 2012 },
-//   { title: "The Shining", year: 1980 },
-//   { title: "WALL·E", year: 2008 },
-//   { title: "American Beauty", year: 1999 },
-//   { title: "The Dark Knight Rises", year: 2012 },
-//   { title: "Princess Mononoke", year: 1997 },
-//   { title: "Aliens", year: 1986 },
-//   { title: "Oldboy", year: 2003 },
-//   { title: "Once Upon a Time in America", year: 1984 },
-//   { title: "Witness for the Prosecution", year: 1957 },
-//   { title: "Das Boot", year: 1981 },
-//   { title: "Citizen Kane", year: 1941 },
-//   { title: "North by Northwest", year: 1959 },
-//   { title: "Vertigo", year: 1958 },
-//   {
-//     title: "Star Wars: Episode VI - Return of the Jedi",
-//     year: 1983,
-//   },
-//   { title: "Reservoir Dogs", year: 1992 },
-//   { title: "Braveheart", year: 1995 },
-//   { title: "M", year: 1931 },
-//   { title: "Requiem for a Dream", year: 2000 },
-//   { title: "Amélie", year: 2001 },
-//   { title: "A Clockwork Orange", year: 1971 },
-//   { title: "Like Stars on Earth", year: 2007 },
-//   { title: "Taxi Driver", year: 1976 },
-//   { title: "Lawrence of Arabia", year: 1962 },
-//   { title: "Double Indemnity", year: 1944 },
-//   {
-//     title: "Eternal Sunshine of the Spotless Mind",
-//     year: 2004,
-//   },
-//   { title: "Amadeus", year: 1984 },
-//   { title: "To Kill a Mockingbird", year: 1962 },
-//   { title: "Toy Story 3", year: 2010 },
-//   { title: "Logan", year: 2017 },
-//   { title: "Full Metal Jacket", year: 1987 },
-//   { title: "Dangal", year: 2016 },
-//   { title: "The Sting", year: 1973 },
-//   { title: "2001: A Space Odyssey", year: 1968 },
-//   { title: "Singin' in the Rain", year: 1952 },
-//   { title: "Toy Story", year: 1995 },
-//   { title: "Bicycle Thieves", year: 1948 },
-//   { title: "The Kid", year: 1921 },
-//   { title: "Inglourious Basterds", year: 2009 },
-//   { title: "Snatch", year: 2000 },
-//   { title: "3 Idiots", year: 2009 },
-//   { title: "Monty Python and the Holy Grail", year: 1975 },
-// ];
