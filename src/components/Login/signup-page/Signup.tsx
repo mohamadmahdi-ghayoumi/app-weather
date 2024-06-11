@@ -20,6 +20,7 @@ import { useNavigate } from "react-router";
 import Person2Icon from "@mui/icons-material/Person2";
 import { useState } from "react";
 import GetUsers from "../../../api/get-user/get";
+
 function Signup() {
   const [isToastSuccess, setIsToastSuccess] = useState(false);
   const [isToastError, setIsToastError] = useState({ mode: false, text: "" });
@@ -30,7 +31,6 @@ function Signup() {
   function handleCreateUser(e) {
     e.preventDefault();
     setIsToastError(false);
-
     const { password, email, username } = e.target;
     console.log(password, email);
     if (!!password.value && !!email.value && !!username.value) {
@@ -76,6 +76,7 @@ function Signup() {
         alignItems: "flex-start",
       }}
     >
+      
       <video
         autoPlay
         loop
